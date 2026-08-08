@@ -705,36 +705,35 @@ function agregarAbono() {
 }
 
 function devolverBoleta() {
-  // Confirmación previa para evitar liberaciones accidentales
   if (!confirm("¿Estás seguro de que deseas devolver esta boleta? Se borrarán los datos del cliente y volverá a estar disponible.")) {
     return;
   }
 
-  // 1. Limpiar datos del cliente y comprador
-  const camposALimpiar = ["fn", "ft", "fdir", "fasig", "fobs"];
-  camposALimpiar.forEach(id => {
-    const campo = document.getElementById(id);
-    if (campo) campo.value = "";
+  // 1. Limpieza de TODOS los inputs del cliente y metadata
+  const campos = ["fn", "ft", "fdir", "fasig", "fobs", "ffecha", "fcomprador"];
+  campos.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
   });
 
-  // 2. Restablecer abonos y saldos
+  // 2. Restablecer valores financieros
   const elAbono = document.getElementById("fa");
   const elSaldo = document.getElementById("fs");
-  const elNuevoAbono = document.getElementById("fa-nuevo");
+  const elNuevo = document.getElementById("fa-nuevo");
   const elRpa = document.getElementById("rpa");
   const elRps = document.getElementById("rps");
 
   if (elAbono) elAbono.value = "0";
-  if (elNuevoAbono) elNuevoAbono.value = "0";
+  if (elNuevo) elNuevo.value = "0";
   if (elSaldo) elSaldo.value = fmt(PRECIO);
   if (elRpa) elRpa.textContent = "$0";
   if (elRps) elRps.textContent = "$" + fmt(PRECIO);
 
-  // 3. Cambiar automáticamente el estado a "Disponible" (LIBRE)
+  // 3. Forzar estado "LIBRE" (Disponible)
   const radioLibre = document.querySelector('input[name="est"][value="LIBRE"]');
   if (radioLibre) radioLibre.checked = true;
 
-  // 4. Marcar edición para que el sistema habilite el guardado/sincronización
+  // 4. Marcar en edición para enviar los campos vacíos a Google Sheets
   marcarEdicion();
 }
 
