@@ -651,6 +651,10 @@ function renderRes(num){
         <input id="ffecha" type="text" value="${esc(bs.fechaVenta)}" readonly/></div>
     </div>
     ${ua}
+    <!-- Botón para la acción de devolución -->
+    <button type="button" class="btn btn-sec btn-sm" style="color: var(--err); border-color: var(--err);" onclick="devolverBoleta()">
+      🔄 Devolver / Liberar Boleta
+    </button>
     <div class="brow">
       <button class="btn btn-ok" onclick="guardar('${num}')">💾 Guardar en la nube</button>
       <button class="btn btn-sec" onclick="limpiar()">← Volver</button>
@@ -697,6 +701,40 @@ function agregarAbono() {
     if (elObs) elObs.value = "PAGO";
   }
 
+  marcarEdicion();
+}
+
+function devolverBoleta() {
+  // Confirmación previa para evitar liberaciones accidentales
+  if (!confirm("¿Estás seguro de que deseas devolver esta boleta? Se borrarán los datos del cliente y volverá a estar disponible.")) {
+    return;
+  }
+
+  // 1. Limpiar datos del cliente y comprador
+  const camposALimpiar = ["fn", "ft", "fdir", "fasig", "fobs"];
+  camposALimpiar.forEach(id => {
+    const campo = document.getElementById(id);
+    if (campo) campo.value = "";
+  });
+
+  // 2. Restablecer abonos y saldos
+  const elAbono = document.getElementById("fa");
+  const elSaldo = document.getElementById("fs");
+  const elNuevoAbono = document.getElementById("fa-nuevo");
+  const elRpa = document.getElementById("rpa");
+  const elRps = document.getElementById("rps");
+
+  if (elAbono) elAbono.value = "0";
+  if (elNuevoAbono) elNuevoAbono.value = "0";
+  if (elSaldo) elSaldo.value = fmt(PRECIO);
+  if (elRpa) elRpa.textContent = "$0";
+  if (elRps) elRps.textContent = "$" + fmt(PRECIO);
+
+  // 3. Cambiar automáticamente el estado a "Disponible" (LIBRE)
+  const radioLibre = document.querySelector('input[name="est"][value="LIBRE"]');
+  if (radioLibre) radioLibre.checked = true;
+
+  // 4. Marcar edición para que el sistema habilite el guardado/sincronización
   marcarEdicion();
 }
 
