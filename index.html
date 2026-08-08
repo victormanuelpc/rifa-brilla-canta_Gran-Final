@@ -668,19 +668,36 @@ function marcarEdicion(){
 }
 function finEdicion(){editando=false;clearTimeout(timerEd);document.getElementById("edit-banner").classList.remove("show");}
 
-function agregarAbono(){
-  const nuevo=parseInt(document.getElementById("fa-nuevo").value)||0;
-  if(nuevo<=0){toast("Escribe un valor mayor a 0","err2");return;}
-  const actual=parseInt(document.getElementById("fa").value)||0;
-  const total=Math.min(actual+nuevo,PRECIO);
-  document.getElementById("fa").value=total;
-  document.getElementById("fa-nuevo").value=0;
+function agregarAbono() {
+  const elNuevo = document.getElementById("fa-nuevo");
+  const elAbono = document.getElementById("fa");
+  const elSaldo = document.getElementById("fs");
+  const elRpa = document.getElementById("rpa");
+  const elRps = document.getElementById("rps");
+  const elObs = document.getElementById("fobs");
+
+  const nuevo = parseFloat(elNuevo.value) || 0;
+  if (nuevo <= 0) return;
+
+  const actual = parseFloat(elAbono.value) || 0;
+  const total = actual + nuevo;
+  const saldo = Math.max(0, PRECIO - total);
+
+  // Actualizar valores en pantalla
+  elAbono.value = total;
+  elSaldo.value = fmt(saldo);
+  if (elRpa) elRpa.textContent = "$" + fmt(total);
+  if (elRps) elRps.textContent = "$" + fmt(saldo);
+  elNuevo.value = "0";
+
+  // AUTOMATIZACIÓN DE PAGO COMPLETO
+  if (saldo === 0) {
+    const radioVendida = document.querySelector('input[name="est"][value="VENDIDA"]');
+    if (radioVendida) radioVendida.checked = true;
+    if (elObs) elObs.value = "PAGO";
+  }
+
   marcarEdicion();
-  const saldo=Math.max(0,PRECIO-total);
-  if(document.getElementById("rpa"))document.getElementById("rpa").textContent="$"+fmt(total);
-  if(document.getElementById("rps"))document.getElementById("rps").textContent="$"+fmt(saldo);
-  if(document.getElementById("fs"))document.getElementById("fs").value="$"+fmt(saldo);
-  toast("✅ Abono de $"+fmt(nuevo)+" agregado","ok2");
 }
 
 async function guardar(num){
