@@ -766,7 +766,7 @@ function renderResumen(){
   document.getElementById("st-v").textContent=vend;
   document.getElementById("st-a").textContent=asig;
   document.getElementById("st-l").textContent=lib;
-  const byR = r => Object.values(cache2).filter(b => b.responsable === r);
+ const byR = r => Object.keys(BOLETAS2).filter(k => (cache2[k]?.responsable || cache2[k]?.dueno || BOLETAS2[k]?.dueno) === r).map(k => cache2[k] || eb2(k));
   [["rv",byR("VICTOR")],["rp",byR("PEDRO")]].forEach(([id,arr])=>{
     const activas=arr.filter(b=>b.estado!=="LIBRE").length;
     const libre=arr.filter(b=>b.estado==="LIBRE").length;
